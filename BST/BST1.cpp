@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+typedef uintptr_t un;
 
 struct node{
 	int data;
@@ -209,6 +210,32 @@ node *tree_predecessor(node *x)
 	}
 }
 
+void delete_node(node *root,node *z)
+{
+	node *y,*x;
+	if (z->left==NULL || z->right==NULL)
+		y=z;
+	else 
+		y=tree_successor(z);
+	if (y->left!=NULL)
+		x=y->left;
+	else
+		x=y->right;
+	if (x!=NULL)
+		x->parent=y->parent;
+	if (y->parent==NULL)
+		root=x;
+	else if (y==y->parent->left)
+		y->parent->left=x;
+	else
+		y->parent->right=x;
+	if (y!=z)
+	{
+		z->data=y->data;
+	}
+	free(y);
+}	
+
 int main()
 {
 	srand(time(0));
@@ -251,5 +278,12 @@ int main()
 		cout<<x<<" is the minimum. There is no predecessor!"<<endl;
 	else
 		cout<<"Predecessor of "<<x<<" is "<<tree_predecessor(_search(root,x))->data<<endl;
+
+	cout<<"Enter a value to deleted in BST :: ";
+	cin>>x;
+	delete_node(root,_search(root,x));
+	cout<<"BST after deletion"<<endl;
+	iter_inorder(root);
+	cout<<endl;
 
 }
