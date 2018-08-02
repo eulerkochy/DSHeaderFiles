@@ -144,14 +144,16 @@ int findmin(node *t)
 
 bool search(node *t,int x)
 {
-	if (t->data==x)
-		return true;
-	if (t==NULL)
-		return false;
-	if (t->data < x)
-		return search(t->right,x);
-	else
-		return search(t->left,x);
+	while (t!=NULL)
+	{
+		if (t->data > x)
+			t=t->left;
+		else if (t->data < x)
+			t=t->right;
+		else
+			return true;
+	}
+	return false;
 }
 
 node *_search(node *t,int x) // returns the node with value x
@@ -370,6 +372,14 @@ int main()
 	cout<<"Max: "<<findmax(root)<<endl;
 	cout<<"Min: "<<findmin(root)<<endl;
 	cout<<"No. of leave nodes : "<<no_of_leaf(root)<<endl;
+
+	int y;
+	cout<<"Enter a value to be searched :: ";
+	cin>>y;
+	if (search(root,y))
+		cout<<y<<" is in BST\n";
+	else
+		cout<<y<<" is not in BST\n";
 	
 	cout<<"Enter a value in BST :: ";
 	int x;
@@ -391,10 +401,5 @@ int main()
 	cout<<"BST after deletion"<<endl;
 	iter_inorder(root);
 	cout<<endl;
-
-	cout<<"Enter k :";
-	int k;
-	cin>>k;
-	cout<<"The k-th smallest element is "<<kthsmallest(root,k)<<endl;
 
 }
