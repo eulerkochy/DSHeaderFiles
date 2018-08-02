@@ -19,13 +19,12 @@ node *insert(node *curr,int data)
 {
 	if (curr==NULL)
 		return newNode(data);
-
 	if (curr->data < data) // right contains <
 	{
 		curr->right=insert(curr->right,data);
 		curr->right->parent=curr;
 	}
-	else				   // left contains >=
+	else // left contains >=
 	{
 		curr->left=insert(curr->left,data);
 		curr->left->parent=curr;
@@ -109,6 +108,24 @@ void inorder2(node *t)
 	inorder2(t->right);
 	cout<<t->data<<" ";
 	inorder2(t->left);
+}
+
+void level_order(node *t)
+{
+	queue<node *> q;
+	if (t!=NULL)
+		q.push(t);
+	while (!q.empty())
+	{
+		node *tmp=q.front();
+		cout<<tmp->data<<" ";
+		if (tmp->left!=NULL)
+			q.push(tmp->left);
+		if (tmp->right!=NULL)
+			q.push(tmp->right);
+		q.pop();
+	}
+	cout<<endl;	
 }
 
 int findmax(node *t)
@@ -209,6 +226,8 @@ node *tree_predecessor(node *x)
 		return y;
 	}
 }
+/*
+The Cormen way
 
 void delete_node(node *root,node *z)
 {
@@ -234,7 +253,90 @@ void delete_node(node *root,node *z)
 		z->data=y->data;
 	}
 	free(y);
-}	
+}*/
+
+void morris_traversal(node *root)
+{
+	node *curr=root;
+	while (curr!=NULL)
+	{
+		if (curr->left==NULL)
+		{
+			cout<<curr->data<<" ";
+			curr=curr->right;
+		}
+		else
+		{
+			node *pre;
+			pre = curr->left;
+      		while (pre->right != NULL && pre->right != curr)
+        		pre = pre->right;
+			if (pre->right==NULL)
+			{
+				pre->right=curr;
+				curr=curr->left;
+			}
+			else
+			{
+				pre->right=NULL;
+				cout<<curr->data<<" ";
+				curr=curr->right;
+			}
+		}
+	}
+	cout<<endl;
+}
+
+node *delete_node(node *root, int key)
+{
+	if (root==NULL)
+		return root;
+
+	if (key < root->data)
+		root->left=delete_node(root->left,key);
+	else if (key > root->data)
+		root->right=delete_node(root->right,key);
+	else
+	{
+		//Case 1: No children
+		if (root->left==NULL && root->right==NULL)
+		{
+			free(root);
+			root=NULL;
+		}
+
+		//Case 2: One children
+		else if (root->left==NULL)
+		{
+			node *temp=root;
+			root=root->right;
+			free(temp);
+		}
+		else if (root->right==NULL)
+		{
+			node *temp=root;
+			root=root->left;
+			free(temp);
+		}
+
+		// Case 3: Two children -->There are two approaches. I'll describe these as I write.
+		else
+		{
+			//Approach 1: Finding the maximum of the left subtree
+			node *temp=findmaxnode(root->left);
+			root->data=temp->data;
+			root->left=delete_node(root->left,temp->data); 
+
+			//Approach 2: Finding the minimum of the right subtree
+			/*
+			node *temp=findminnode(root->right);
+			root->data=temp->data;
+			root->right=delete_node(root->right,temp->data);
+			*/
+		}
+	}
+	return root;
+}
 
 int main()
 {
@@ -246,7 +348,7 @@ int main()
 	{
 		root=insert(root,-50+rand()%101);
 	}
-	cout<<"Increasing order||INORDER TRAVERSAL\n";
+	cout<<"Increasing order\n";
 	inorder(root);
 	cout<<endl;
 	cout<<"Inorder traversal using stacks :\n";
@@ -261,6 +363,10 @@ int main()
 	cout<<"Postorder\n";
 	postorder(root);
 	cout<<endl;
+	cout<<"Levelorder\n";
+	level_order(root);
+	cout<<"Morris Inorder Traversal\n";
+	morris_traversal(root);
 	cout<<"Max: "<<findmax(root)<<endl;
 	cout<<"Min: "<<findmin(root)<<endl;
 	cout<<"No. of leave nodes : "<<no_of_leaf(root)<<endl;
@@ -281,9 +387,14 @@ int main()
 
 	cout<<"Enter a value to deleted in BST :: ";
 	cin>>x;
-	delete_node(root,_search(root,x));
+	delete_node(root,x);
 	cout<<"BST after deletion"<<endl;
 	iter_inorder(root);
 	cout<<endl;
+
+	cout<<"Enter k :";
+	int k;
+	cin>>k;
+	cout<<"The k-th smallest element is "<<kthsmallest(root,k)<<endl;
 
 }
