@@ -1,1 +1,2 @@
-Using OPEN ADDRESSING-- linear probing and quadratic problem
+Using OPEN ADDRESSING-- linear probing and quadratic probing
+
